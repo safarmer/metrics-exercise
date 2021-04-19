@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: co.thatch.example.metrics
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [annotation-api, app-name, data, data-jdbc, gradle, http-client, java, java-application, jdbc-hikari, jib, junit, logback, mockito, mysql, netty-server, reactor, readme, shade, testcontainers, yaml]
