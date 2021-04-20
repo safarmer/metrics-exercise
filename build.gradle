@@ -5,7 +5,7 @@ plugins {
 }
 
 version = "0.1"
-group = "co.thatch.example.metrics"
+group = "co.thatch.example"
 
 repositories {
     mavenCentral()
@@ -27,14 +27,23 @@ dependencies {
     implementation("io.micronaut.data:micronaut-data-jdbc")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("javax.annotation:javax.annotation-api")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
     testImplementation("org.testcontainers:testcontainers")
-    implementation("io.micronaut:micronaut-validation")
-    implementation("io.micronaut.reactor:micronaut-reactor")
+
+    implementation("org.testcontainers:mysql")
+    implementation("org.testcontainers:testcontainers")
+    
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("mysql:mysql-connector-java")
+    
+    testImplementation("com.google.truth:truth:1.1.2")
     testImplementation("org.mockito:mockito-core")
+    testImplementation('org.hamcrest:hamcrest-all:1.3')
+
 }
 
 
@@ -42,8 +51,9 @@ application {
     mainClass.set("co.thatch.example.metrics.Application")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("15")
-    targetCompatibility = JavaVersion.toVersion("15")
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(15)
+    }
 }
 
 
@@ -52,4 +62,25 @@ jib {
     to {
         image = "gcr.io/myapp/jib-image"
     }
+}
+
+eclipse {
+  jdt {
+    apt {
+      // whether annotation processing is enabled in Eclipse
+      aptEnabled = compileJava.aptOptions.annotationProcessing
+      // where Eclipse will output the generated sources; values are interpreted as per project.file()
+      genSrcDir = file('.apt_generated')
+      genTestSrcDir = file('.apt_generated_tests')
+      // whether annotation processing is enabled in the editor
+      reconcileEnabled = true
+      // a map of annotation processor options; a null value will pass the argument as -Akey rather than -Akey=value
+      processorOptions = compileJava.aptOptions.processorArgs
+    }
+  }
+
+  factorypath {
+    plusConfigurations = [ configurations.annotationProcessor, configurations.testAnnotationProcessor ]
+    minusConfigurations = []
+  }
 }
