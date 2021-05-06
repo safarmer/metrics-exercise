@@ -21,6 +21,16 @@ To build a service that can track the average queries per-second (QPS) for a set
 - Is it possible to gather metrics for all endpoints without needing to ad code to each controller?
 - How would we persist metrics if we wanted to store historic data? How would we ensure that this wouldn't impact performance of the instrumented endpoints?
 
+### Ryans Questions
+- Is there an upper bound on the window size?
+- Could the interval/bucket size also be able to be provided via request param? Assuming there should be validation logic to guard against invalid window/bucket combinations?
+  Or should bucket size be automatic as a function of the window size to prevent potential performance degradation? Or always fixed (ie 5sec)?
+- Is there an accuracy requirement? ie this is used for billing customers. At what resolution? ie interval can have slop, but not the overall window
+- Are we assuming there's only a single instance of the service we're gathering metrics for, or we're only interested in metrics per instance?
+- How durable are the metrics? Continue or reset on restart?
+- How is the history intended to be queried?  
+- Restrictions on utilized tech? ie the code/readme hints at using mysql
+
 ### Notes
 
 - The application has a basic REST controller that implements a GET and a POST endpoint. These can be instrumented to verif the integration of the metrics service.

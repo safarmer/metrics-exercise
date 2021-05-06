@@ -1,0 +1,14 @@
+GET http://localhost:8080/foo
+
+###
+
+POST http://localhost:8080/foo
+
+###
+
+GET http://localhost:8080/metrics
+
+
+###
+
+GET http://localhost:8080/metrics/histogram?key=GET_%2Fmetrics
