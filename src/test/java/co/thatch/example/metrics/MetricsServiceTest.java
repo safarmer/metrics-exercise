@@ -1,10 +1,12 @@
 package co.thatch.example.metrics;
 
 import co.thatch.example.metrics.model.Metric;
+import co.thatch.example.metrics.model.MetricBucket;
 import io.micronaut.runtime.EmbeddedApplication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,30 +40,31 @@ class MetricsServiceTest {
             metricsService.incrementRequestCount("GET_hello", now.minusSeconds(requestOffset));
         });
 
-        Double actualQPS = metricsService.getQPS(Duration.ofSeconds(20));
+        Double actualQPS = metricsService.getQPS(now, Duration.ofSeconds(20));
         assertThat(actualQPS).isEqualTo(expectedRequestRate);
 
         Metric result = metricsService.getHistogram(null, now, Duration.ofSeconds(20), Duration.ofSeconds(5));
         assertThat(result.getRequestsPerSecond()).isEqualTo(expectedRequestRate);
     }
 
-    @ParameterizedTest
-    @MethodSource("requestRates")
-    void basicHistogramTest(List<Integer> requestOffsets, Double expectedRequestRate) {
-        Instant now = Instant.now();
+    @Test
+    void basicHistogramTest() {
+        Instant time = Instant.ofEpochSecond(1000);
+        List<Integer> requestOffsets = List.of(9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
         requestOffsets.forEach(requestOffset -> {
-            metricsService.incrementRequestCount("GET_hello", now.minusSeconds(requestOffset));
+            metricsService.incrementRequestCount("GET_hello", time.minusSeconds(requestOffset));
         });
 
-        Metric result = metricsService.getHistogram(null, now, Duration.ofSeconds(20), Duration.ofSeconds(5));
-        assertThat(result.getRequestsPerSecond()).isEqualTo(expectedRequestRate);
+        Metric result = metricsService.getHistogram(null, time, Duration.ofSeconds(20), Duration.ofSeconds(20));
+        assertThat(result.getRequestsPerSecond()).isEqualTo(0.5);
+        assertThat(result.getBuckets().get(0).getRequestsPerSecond()).isEqualTo(0.5);
     }
 
     private static Stream<Arguments> requestRates() {
         return Stream.of(
-                Arguments.of(List.of(10, 10), 0.1),
-                Arguments.of(List.of(1, 2, 3, 4), 0.2),
-                Arguments.of(List.of(1, 2, 3, 4, 5, 6), 0.3)
+                Arguments.of(List.of(10, 0), 0.1),
+                Arguments.of(List.of(3, 2, 1, 0), 0.2),
+                Arguments.of(List.of(5, 4, 3, 2, 1, 0), 0.3)
         );
     }
 

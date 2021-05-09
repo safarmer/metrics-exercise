@@ -10,8 +10,11 @@ import java.time.Instant;
 public interface MetricsService {
 
     void incrementRequestCount(String key, Instant requestInstant);
-    double getQPS(Duration window);
+
+    double getQPS(Instant end, Duration window);
+
     Metric getHistogram(String key, Instant end, Duration window, Duration interval);
+
     void reset();
 
 }

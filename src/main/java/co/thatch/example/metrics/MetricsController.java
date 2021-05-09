@@ -26,7 +26,7 @@ public class MetricsController {
     public double getQPS(
             @QueryValue(defaultValue = "30") @Min(1) @Max(1800) Integer windowInSeconds
     ) {
-        return metricsService.getQPS(Duration.ofSeconds(windowInSeconds));
+        return metricsService.getQPS(Instant.now(), Duration.ofSeconds(windowInSeconds));
     }
 
 
