@@ -17,9 +17,13 @@ To build a service that can track the average queries per-second (QPS) for a set
 ### Open Questions
 
 - Can we expose total QPS for the system as well as QPS per endpoint/path?
+  - _Ryan_: Demonstrated with `PerEndpointInMemoryMetricsService`
 - Single request for all metrics, or query params/different endpoints for different metrics?
-- Is it possible to gather metrics for all endpoints without needing to ad code to each controller?
+  - _Ryan_: Achieved with single endpoint `metrics/histogram` but as per discussions exposed a separate endpoint `/metrics` for QPS for simple polling from load balancers etc 
+- Is it possible to gather metrics for all endpoints without needing to and code to each controller?
+  - _Ryan_: Yes, demonstrated with `ServerRequestMetricFilter` via a `OncePerRequestHttpServerFilter`. Discussed implications where `/metrics` requests would also be instrumented as well as requests that don't match endpoints
 - How would we persist metrics if we wanted to store historic data? How would we ensure that this wouldn't impact performance of the instrumented endpoints?
+  - _Ryan_: Discussed an architecture akin to the prometheus approach where a separate "collector" service would poll and store in its own time series database 
 
 ### Ryans Questions
 - Is there an upper bound on the window size?

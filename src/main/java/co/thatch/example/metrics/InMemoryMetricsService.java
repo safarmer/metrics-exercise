@@ -63,8 +63,8 @@ public class InMemoryMetricsService implements MetricsService {
             double requestCount = getCountForRange(rangeStart, rangeEnd);
             buckets.add(new MetricBucket(String.valueOf(rangeStart), requestCount / interval.getSeconds()));
         }
-        double requestsPerSecond = getQPS(end, window);
-        return new Metric(requestsPerSecond, buckets);
+        double qps = getQPS(end, window);
+        return new Metric(qps, buckets);
     }
 
     @Override

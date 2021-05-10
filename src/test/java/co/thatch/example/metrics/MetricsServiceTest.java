@@ -44,7 +44,7 @@ class MetricsServiceTest {
         assertThat(actualQPS).isEqualTo(expectedRequestRate);
 
         Metric result = metricsService.getHistogram(null, now, Duration.ofSeconds(20), Duration.ofSeconds(5));
-        assertThat(result.getRequestsPerSecond()).isEqualTo(expectedRequestRate);
+        assertThat(result.getQPS()).isEqualTo(expectedRequestRate);
     }
 
     @Test
@@ -56,8 +56,8 @@ class MetricsServiceTest {
         });
 
         Metric result = metricsService.getHistogram(null, time, Duration.ofSeconds(20), Duration.ofSeconds(20));
-        assertThat(result.getRequestsPerSecond()).isEqualTo(0.5);
-        assertThat(result.getBuckets().get(0).getRequestsPerSecond()).isEqualTo(0.5);
+        assertThat(result.getQPS()).isEqualTo(0.5);
+        assertThat(result.getBuckets().get(0).getQPS()).isEqualTo(0.5);
     }
 
     private static Stream<Arguments> requestRates() {
