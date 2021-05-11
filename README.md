@@ -17,9 +17,23 @@ To build a service that can track the average queries per-second (QPS) for a set
 ### Open Questions
 
 - Can we expose total QPS for the system as well as QPS per endpoint/path?
+  - _Ryan_: Demonstrated with `PerEndpointInMemoryMetricsService`
 - Single request for all metrics, or query params/different endpoints for different metrics?
-- Is it possible to gather metrics for all endpoints without needing to ad code to each controller?
+  - _Ryan_: Achieved with single endpoint `metrics/histogram` but as per discussions exposed a separate endpoint `/metrics` for QPS for simple polling from load balancers etc 
+- Is it possible to gather metrics for all endpoints without needing to and code to each controller?
+  - _Ryan_: Yes, demonstrated with `ServerRequestMetricFilter` via a `OncePerRequestHttpServerFilter`. Discussed implications where `/metrics` requests would also be instrumented as well as requests that don't match endpoints
 - How would we persist metrics if we wanted to store historic data? How would we ensure that this wouldn't impact performance of the instrumented endpoints?
+  - _Ryan_: Discussed an architecture akin to the prometheus approach where a separate "collector" service would poll and store in its own time series database 
+
+### Ryans Questions
+- Is there an upper bound on the window size?
+- Could the interval/bucket size also be able to be provided via request param? Assuming there should be validation logic to guard against invalid window/bucket combinations?
+  Or should bucket size be automatic as a function of the window size to prevent potential performance degradation? Or always fixed (ie 5sec)?
+- Is there an accuracy requirement? ie this is used for billing customers. At what resolution? ie interval can have slop, but not the overall window
+- Are we assuming there's only a single instance of the service we're gathering metrics for, or we're only interested in metrics per instance?
+- How durable are the metrics? Continue or reset on restart?
+- How is the history intended to be queried?  
+- Restrictions on utilized tech? ie the code/readme hints at using mysql
 
 ### Notes
 
