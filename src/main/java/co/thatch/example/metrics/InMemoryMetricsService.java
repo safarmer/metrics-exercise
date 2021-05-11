@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.DoubleAdder;
 
 
 @Singleton
-public class InMemoryMetricsService implements MetricsService {
+public abstract class InMemoryMetricsService implements MetricsService {
     private static final int MAX_WINDOW_SIZE_WITH_BUFFER = 1_800 + 1;
 
     private final Clock clock;
